@@ -6,7 +6,6 @@ let carBmd;
 let bmd;
 let car;
 let isNewStroke = true;
-let dt;
 
 function adjust() {
     let divgame = document.getElementById("game");
@@ -18,7 +17,6 @@ function preload() {
     carBmd = game.add.bitmapData(50, 35, 'car');
     carBmd.ctx.fillStyle = "#995500";
     carBmd.ctx.fillRect(0, 0, 50, 35);
-    dt = 1.0 / game.time.desiredFps;
 }
 
 function create() {
@@ -43,10 +41,8 @@ function update() {
     if ((car.y < 0 && car.v.y < 0) || (car.y > game.height - car.height && car.v.y > 0)) {
         car.v.y *= -0.8;
     }
-    //car.x += car.v.x * game.time.physicsElapsed;
-    //car.y += car.v.y * game.time.physicsElapsed;
-    car.x += car.v.x * dt;
-    car.y += car.v.y * dt;
+    car.x += car.v.x * game.time.physicsElapsed;
+    car.y += car.v.y * game.time.physicsElapsed;
 
     if (game.input.mousePointer.isDown) {
         if (isNewStroke) {
