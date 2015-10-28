@@ -1,12 +1,15 @@
 "use strict";
 
-GAME_WIDTH = 600;
-GAME_HEIGHT = 400;
+let GAME_WIDTH = 600;
+let GAME_HEIGHT = 400;
+let carBmd;
+let bmd;
+let car;
 
 adjust();
 
 function adjust() {
-    var divgame = document.getElementById("game");
+    let divgame = document.getElementById("game");
     divgame.style.width = window.innerWidth + "px";
     divgame.style.height = window.innerHeight + "px";
 }
@@ -15,7 +18,7 @@ window.addEventListener('resize', function () {
     adjust();
 });
 
-var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
+let game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
 
 function preload() {
     carBmd = game.add.bitmapData(50, 35, 'car');
@@ -32,7 +35,7 @@ function create() {
     car = game.add.sprite(10, 10, carBmd);
 
     bmd = game.add.bitmapData(800, 600);
-    line = game.add.sprite(0, 0, bmd);
+    game.add.sprite(0, 0, bmd);
     bmd.ctx.beginPath();
     bmd.ctx.strokeStyle = "white";
 }
