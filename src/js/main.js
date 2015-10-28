@@ -17,6 +17,9 @@ function preload() {
     carBmd = game.add.bitmapData(50, 35, 'car');
     carBmd.ctx.fillStyle = "#995500";
     carBmd.ctx.fillRect(0, 0, 50, 35);
+
+    //  Advanced profiling, including the fps rate, fps min/max, suggestedFps and msMin/msMax are updated
+    game.time.advancedTiming = true;
 }
 
 function create() {
@@ -56,10 +59,15 @@ function update() {
     }
 }
 
+function render() {
+    //  FPS debug info
+    game.debug.text('FPS: ' + game.time.fps || 'FPS: --', 40, 40, "#00ff00");
+}
+
 adjust();
 
 window.addEventListener('resize', function () {
     adjust();
 });
 
-let game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
+let game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'game', { preload: preload, create: create, update: update, render: render });
