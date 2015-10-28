@@ -24,9 +24,14 @@ function create() {
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
 
+    game.stage.backgroundColor = '#2d2d2d';
+
     car = game.add.sprite(10, 10, carBmd);
+    game.physics.enable(car, Phaser.Physics.ARCADE);
     let v_fac = 200
-    car.v = new Phaser.Point(Math.random(), Math.random()).multiply(v_fac, v_fac)
+    car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac)
+    car.body.collideWorldBounds = true;
+    car.body.bounce.setTo(0.8, 0.8);
 
     bmd = game.add.bitmapData(GAME_WIDTH, GAME_HEIGHT);
     game.add.sprite(0, 0, bmd);
@@ -35,15 +40,6 @@ function create() {
 }
 
 function update() {
-    if ((car.x < 0 && car.v.x < 0) || (car.x > game.width  - car.width && car.v.x > 0)) {
-        car.v.x *= -0.8;
-    }
-    if ((car.y < 0 && car.v.y < 0) || (car.y > game.height - car.height && car.v.y > 0)) {
-        car.v.y *= -0.8;
-    }
-    car.x += car.v.x * game.time.physicsElapsed;
-    car.y += car.v.y * game.time.physicsElapsed;
-
     if (game.input.mousePointer.isDown) {
         if (isNewStroke) {
             bmd.ctx.moveTo(game.input.x, game.input.y);
