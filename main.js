@@ -1,3 +1,5 @@
+"use strict";
+
 GAME_WIDTH = 600;
 GAME_HEIGHT = 400;
 
@@ -9,12 +11,11 @@ function adjust() {
     divgame.style.height = window.innerHeight + "px";
 }
 
-window.addEventListener('resize', function() {
-       adjust();
+window.addEventListener('resize', function () {
+    adjust();
 });
 
-var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'game',
-        {preload: preload, create: create, update: update});
+var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
 
 function preload() {
     carBmd = game.add.bitmapData(50, 35, 'car');
@@ -23,15 +24,15 @@ function preload() {
 }
 
 function create() {
-    game.renderer.renderSession.roundPixels = true
+    game.renderer.renderSession.roundPixels = true;
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
 
-    car = game.add.sprite(10, 10, carBmd)
+    car = game.add.sprite(10, 10, carBmd);
 
-    bmd = game.add.bitmapData(800,600);
-    line = game.add.sprite(0, 0, bmd); 
+    bmd = game.add.bitmapData(800, 600);
+    line = game.add.sprite(0, 0, bmd);
     bmd.ctx.beginPath();
     bmd.ctx.strokeStyle = "white";
 }
@@ -47,3 +48,4 @@ function update() {
         bmd.dirty = true;
     }
 }
+
