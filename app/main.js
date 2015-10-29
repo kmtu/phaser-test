@@ -2,12 +2,18 @@
 
 import Car from "app/Car";
 
+let GAME_PIXEL_PER_METER = 10;
+let WORLD_WIDTH_METER = 100;
+let WORLD_HEIGHT_METER = 80;
+let WORLD_WIDTH_PIXEL = GAME_PIXEL_PER_METER * WORLD_WIDTH_METER;
+let WORLD_HEIGHT_PIXEL = GAME_PIXEL_PER_METER * WORLD_HEIGHT_METER;
 let GAME_WIDTH = 800;
 let GAME_HEIGHT = 600;
+
 let lineBmd;
-let car;
 let isNewStroke = true;
 let divgame = document.getElementById("game");
+let cursors;
 
 let game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'game', { init: init, preload: preload, create: create, update: update, render: render });
 
@@ -38,8 +44,10 @@ function create() {
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
 
+    game.world.resize(WORLD_WIDTH_PIXEL, WORLD_HEIGHT_PIXEL);
+    cursors = game.input.keyboard.createCursorKeys();
 
-    car = new Car(game);
+    let car = new Car(game);
     game.physics.enable(car, Phaser.Physics.ARCADE);
     let v_fac = 200
     car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac)
@@ -67,9 +75,28 @@ function update() {
     if (game.input.mousePointer.isUp) {
         isNewStroke = true;
     }
+
+    // camera controll
+    if (cursors.up.isDown)
+    {
+        game.camera.y -= 4;
+    }
+    else if (cursors.down.isDown)
+    {
+        game.camera.y += 4;
+    }
+
+    if (cursors.left.isDown)
+    {
+        game.camera.x -= 4;
+    }
+    else if (cursors.right.isDown)
+    {
+        game.camera.x += 4;
+    }
 }
 
 function render() {
-    //  FPS debug info
     game.debug.text('FPS: ' + game.time.fps || 'FPS: --', 40, 40, "#00ff00");
+    game.debug.cameraInfo(game.camera, 500, 32);
 }
