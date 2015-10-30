@@ -1,12 +1,12 @@
 "use strict";
 
-import Car from "app/Car";
+import PhysWorld from 'app/PhysWorld';
 
 const pixelPerMeter = 10;
 const worldWidthMeter = 90;
 const worldHeightMeter = 70;
-const worldWidthPixel = pixelPerMeter * worldWidthMeter;
-const worldHeightPixel = pixelPerMeter * worldHeightMeter;
+const worldWidth = pixelPerMeter * worldWidthMeter;
+const worldHeight = pixelPerMeter * worldHeightMeter;
 const gameWidth = 800;
 const gameHeight = 600;
 
@@ -14,6 +14,9 @@ let lineBmd;
 let isNewStroke = true;
 let divgame = document.getElementById("game");
 let cursors;
+let world;
+let worldScale;
+let physWorld;
 
 let game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game', { init: init, preload: preload, create: create, update: update, render: render });
 
@@ -34,7 +37,7 @@ function preload() {
     let carBmd = game.add.bitmapData(50, 35, 'car', true);
     carBmd.ctx.fillStyle = "#995500";
     carBmd.ctx.fillRect(0, 0, 50, 35);
-    game.cache.addBitmapData('car', carBmd);
+    game.load.image('background', 'app/assets/background.png');
 }
 
 function create() {
@@ -44,10 +47,13 @@ function create() {
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
 
-    game.world.resize(worldWidthPixel, worldHeightPixel);
-    cursors = game.input.keyboard.createCursorKeys();
+    game.world.resize(worldWidth, worldHeight);
 
-    let car = new Car(game);
+    physWorld = new PhysWorld(game);
+
+    game.add.tileSprite(0, 0, worldWidth, worldHeight, 'background', undefined, physWorld);
+
+    let car = physWorld.carGroup.create(0, 0, game.cache.getBitmapData('car'));
     game.physics.enable(car, Phaser.Physics.ARCADE);
     let v_fac = 200
     car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac)
@@ -57,7 +63,7 @@ function create() {
     lineBmd = game.add.bitmapData(gameWidth, gameHeight);
     game.add.sprite(0, 0, lineBmd);
     lineBmd.ctx.beginPath();
-    lineBmd.ctx.strokeStyle = "white";
+    lineBmd.ctx.strokeStyle = "red";
 }
 
 function update() {
@@ -76,23 +82,32 @@ function update() {
         isNewStroke = true;
     }
 
-    // camera controll
-    if (cursors.up.isDown)
+    // camera control
+    if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
     {
         game.camera.y -= 4;
     }
-    else if (cursors.down.isDown)
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
     {
         game.camera.y += 4;
     }
 
-    if (cursors.left.isDown)
+    if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
     {
         game.camera.x -= 4;
     }
-    else if (cursors.right.isDown)
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
     {
         game.camera.x += 4;
+    }
+
+    if (game.input.keyboard.isDown(Phaser.Keyboard.Z))
+    {
+        game.camera.y -= 4;
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.X))
+    {
+        game.camera.y += 4;
     }
 }
 
