@@ -2,20 +2,20 @@
 
 import Car from "app/Car";
 
-let GAME_PIXEL_PER_METER = 10;
-let WORLD_WIDTH_METER = 100;
-let WORLD_HEIGHT_METER = 80;
-let WORLD_WIDTH_PIXEL = GAME_PIXEL_PER_METER * WORLD_WIDTH_METER;
-let WORLD_HEIGHT_PIXEL = GAME_PIXEL_PER_METER * WORLD_HEIGHT_METER;
-let GAME_WIDTH = 800;
-let GAME_HEIGHT = 600;
+const pixelPerMeter = 10;
+const worldWidthMeter = 90;
+const worldHeightMeter = 70;
+const worldWidthPixel = pixelPerMeter * worldWidthMeter;
+const worldHeightPixel = pixelPerMeter * worldHeightMeter;
+const gameWidth = 800;
+const gameHeight = 600;
 
 let lineBmd;
 let isNewStroke = true;
 let divgame = document.getElementById("game");
 let cursors;
 
-let game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'game', { init: init, preload: preload, create: create, update: update, render: render });
+let game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game', { init: init, preload: preload, create: create, update: update, render: render });
 
 function adjust() {
     divgame.style.width = window.innerWidth + "px";
@@ -44,7 +44,7 @@ function create() {
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
 
-    game.world.resize(WORLD_WIDTH_PIXEL, WORLD_HEIGHT_PIXEL);
+    game.world.resize(worldWidthPixel, worldHeightPixel);
     cursors = game.input.keyboard.createCursorKeys();
 
     let car = new Car(game);
@@ -54,7 +54,7 @@ function create() {
     car.body.collideWorldBounds = true;
     car.body.bounce.setTo(0.8, 0.8);
 
-    lineBmd = game.add.bitmapData(GAME_WIDTH, GAME_HEIGHT);
+    lineBmd = game.add.bitmapData(gameWidth, gameHeight);
     game.add.sprite(0, 0, lineBmd);
     lineBmd.ctx.beginPath();
     lineBmd.ctx.strokeStyle = "white";
