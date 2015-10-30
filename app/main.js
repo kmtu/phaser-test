@@ -5,27 +5,34 @@ import Car from "app/Car";
 const pixelPerMeter = 10;
 const worldWidthMeter = 90;
 const worldHeightMeter = 70;
-const worldWidthPixel = pixelPerMeter * worldWidthMeter;
-const worldHeightPixel = pixelPerMeter * worldHeightMeter;
-const gameWidth = 800;
-const gameHeight = 600;
+const worldWidth = pixelPerMeter * worldWidthMeter;
+const worldHeight = pixelPerMeter * worldHeightMeter;
 
 let lineBmd;
 let isNewStroke = true;
-let divgame = document.getElementById("game");
+let divGame = document.getElementById("game");
+let divPanel = document.getElementById("panel");
 let cursors;
 
-let game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game', { init: init, preload: preload, create: create, update: update, render: render });
+let viewWidth = window.innerWidth;
+let viewHeight = window.innerHeight;
 
-function adjust() {
-    divgame.style.width = window.innerWidth + "px";
-    divgame.style.height = window.innerHeight + "px";
+let game = new Phaser.Game(viewWidth, viewHeight, Phaser.AUTO, 'game', { init: init, preload: preload, create: create, update: update, render: render });
+
+function adjustSize() {
+    //divGame.style.width = window.innerWidth + "px";
+    //divGame.style.height = window.innerHeight - divPanel.offsetHeight + "px";
+    viewWidth = window.innerWidth;
+    viewHeight = window.innerHeight;
+    //game.scale.setGameSize(viewWidth, viewHeight);
+    game.camera.setSize(viewWidth, viewHeight);
+    game.camera.setPosition(0, 0);
 }
 
 function init() {
-    adjust();
+    adjustSize();
     window.addEventListener('resize', function () {
-        adjust();
+        adjustSize();
     });
 }
 
@@ -40,11 +47,11 @@ function preload() {
 function create() {
     //  Advanced profiling, including the fps rate, fps min/max, suggestedFps and msMin/msMax are updated
     game.time.advancedTiming = true;
-    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    game.scale.pageAlignHorizontally = true;
-    game.scale.pageAlignVertically = true;
+    //game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    //game.scale.pageAlignHorizontally = true;
+    //game.scale.pageAlignVertically = true;
 
-    game.world.resize(worldWidthPixel, worldHeightPixel);
+    game.world.resize(worldWidth, worldHeight);
     cursors = game.input.keyboard.createCursorKeys();
 
     let car = new Car(game);
@@ -54,7 +61,7 @@ function create() {
     car.body.collideWorldBounds = true;
     car.body.bounce.setTo(0.8, 0.8);
 
-    lineBmd = game.add.bitmapData(gameWidth, gameHeight);
+    lineBmd = game.add.bitmapData(viewWidth, viewHeight);
     game.add.sprite(0, 0, lineBmd);
     lineBmd.ctx.beginPath();
     lineBmd.ctx.strokeStyle = "white";
@@ -97,6 +104,6 @@ function update() {
 }
 
 function render() {
-    game.debug.text('FPS: ' + game.time.fps || 'FPS: --', 40, 40, "#00ff00");
-    game.debug.cameraInfo(game.camera, 500, 32);
+    game.debug.text('FPS: ' + game.time.fps || 'FPS: --', viewWidth*0.05, viewHeight*0.05, "#00ff00");
+    game.debug.cameraInfo(game.camera, viewWidth*0.05, viewHeight*0.1);
 }

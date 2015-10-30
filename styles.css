@@ -5,3 +5,11 @@ html, body {
     padding: 0;
     overflow: hidden;
 }
+
+#game {
+    height: 70%;
+}
+
+#panel {
+    height: 30%;
+}
