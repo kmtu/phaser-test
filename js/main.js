@@ -1,6 +1,6 @@
 "use strict";
 
-import PhysWorld from 'app/PhysWorld';
+import PhysWorld from 'js/lib/PhysWorld';
 
 const pixelPerMeter = 10;
 const worldWidthMeter = 90;
@@ -37,7 +37,7 @@ function preload() {
     let carBmd = game.add.bitmapData(50, 35, 'car', true);
     carBmd.ctx.fillStyle = "#995500";
     carBmd.ctx.fillRect(0, 0, 50, 35);
-    game.load.image('background', 'app/assets/background.png');
+    game.load.image('background', 'assets/background.png');
 }
 
 function create() {

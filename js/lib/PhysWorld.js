@@ -1,4 +1,4 @@
-import CarGroup from 'app/CarGroup';
+import CarGroup from 'js/lib/CarGroup';
 
 export default class PhysWorld extends Phaser.Group {
     constructor(game) {
