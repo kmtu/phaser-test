@@ -26,9 +26,10 @@ export default class Simulation extends Phaser.State {
         this.game.scale.pageAlignHorizontally = true;
         this.game.scale.pageAlignVertically = true;
 
-        this.game.world.resize(this.worldWidth, this.worldHeight);
+        this.game.world.setBounds(-this.worldWidth/2, -this.worldHeight/2, this.worldWidth, this.worldHeight);
+        this.game.camera.focusOnXY(0, 0);
 
-        this.game.add.tileSprite(0, 0, this.worldWidth, this.worldHeight, 'background');
+        this.game.add.tileSprite(this.game.world.x, this.game.world.y, this.game.world.width, this.game.world.height, 'background');
 
         let carGroup = new CarGroup(this.game);
 
@@ -39,8 +40,8 @@ export default class Simulation extends Phaser.State {
         car.body.collideWorldBounds = true;
         car.body.bounce.setTo(0.8, 0.8);
 
-        this.lineBmd = this.game.add.bitmapData(this.game.world.width, this.game.world.width);
-        let line = this.game.add.sprite(0, 0, this.lineBmd);
+        this.lineBmd = this.game.add.bitmapData(this.game.world.width, this.game.world.height);
+        let line = this.game.add.sprite(this.game.world.x, this.game.world.y, this.lineBmd);
         this.lineBmd.ctx.beginPath();
         this.lineBmd.ctx.strokeStyle = "red";
     }
@@ -48,9 +49,9 @@ export default class Simulation extends Phaser.State {
     update() {
         if (this.game.input.mousePointer.isDown) {
             if (this.isNewStroke) {
-                this.lineBmd.ctx.moveTo(this.game.input.x + this.game.camera.x, this.game.input.y + this.game.camera.y);
+                this.lineBmd.ctx.moveTo(this.game.input.x + this.game.camera.x + this.game.world.width/2, this.game.input.y + this.game.camera.y + this.game.world.height/2);
             } else {
-                this.lineBmd.ctx.lineTo(this.game.input.x + this.game.camera.x, this.game.input.y + this.game.camera.y);
+                this.lineBmd.ctx.lineTo(this.game.input.x + this.game.camera.x + this.game.world.width/2, this.game.input.y + this.game.camera.y + this.game.world.height/2);
             }
             this.lineBmd.ctx.lineWidth = 2;
             this.lineBmd.ctx.stroke();
