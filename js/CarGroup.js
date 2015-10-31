@@ -1,4 +1,4 @@
-import Car from "js/lib/Car";
+import Car from "js/Car";
 
 export default class CarGroup extends Phaser.Group {
     constructor(game) {
