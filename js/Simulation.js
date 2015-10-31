@@ -63,30 +63,24 @@ export default class Simulation extends Phaser.State {
         }
 
         // camera control
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.UP))
-        {
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             this.game.camera.y -= 4;
         }
-        else if (this.game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
-        {
+        else if (this.game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             this.game.camera.y += 4;
         }
 
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT))
-        {
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             this.game.camera.x -= 4;
         }
-        else if (this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
-        {
+        else if (this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             this.game.camera.x += 4;
         }
 
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.Z))
-        {
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.Z)) {
             this.game.camera.y -= 4;
         }
-        else if (this.game.input.keyboard.isDown(Phaser.Keyboard.X))
-        {
+        else if (this.game.input.keyboard.isDown(Phaser.Keyboard.X)) {
             this.game.camera.y += 4;
         }
     }
