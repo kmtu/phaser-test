@@ -1,15 +1,17 @@
 import CarGroup from 'js/CarGroup';
 
 export default class Simulation extends Phaser.State {
-    constructor(game, widthMeter, heightMeter) {
+    constructor(game, widthMeter, heightMeter, pixelPerMeter) {
         super(game);
         this.game = game;
         this.world = game.world;
         this.camera = game.camera;
 
-        this.pixelPerMeter = 10;
-        this.initWorldWidth = this.pixelPerMeter * widthMeter;
-        this.initWorldHeight = this.pixelPerMeter * heightMeter;
+        this.pixelPerMeter = pixelPerMeter;
+        this.realWorldWidth = widthMeter;
+        this.realWorldHeight = heightMeter;
+        this.pixelWorldWidth = pixelPerMeter * widthMeter;
+        this.pixelWorldHeight = pixelPerMeter * heightMeter;
         this.zoomFactor = 1.1;
         this.cameraMoveSpeed = 10;
 
@@ -19,6 +21,10 @@ export default class Simulation extends Phaser.State {
     }
 
     init() {
+        this.game.time.advancedTiming = true;
+        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        this.game.scale.pageAlignHorizontally = true;
+        this.game.scale.pageAlignVertically = true;
         this.camera.roundPx = false;
     }
 
@@ -31,18 +37,12 @@ export default class Simulation extends Phaser.State {
     }
 
     create() {
-        this.game.time.advancedTiming = true;
-        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        this.game.scale.pageAlignHorizontally = true;
-        this.game.scale.pageAlignVertically = true;
-
-        this.world.setBounds(-this.initWorldWidth/2, -this.initWorldHeight/2, this.initWorldWidth, this.initWorldHeight);
+        this.world.setBounds(-this.pixelWorldWidth/2, -this.pixelWorldHeight/2, this.pixelWorldWidth, this.pixelWorldHeight);
         this.camera.focusOnXY(0, 0);
 
         this.game.add.tileSprite(this.world.x, this.world.y, this.world.width, this.world.height, 'background');
 
         let carGroup = new CarGroup(this.game);
-
         let car = carGroup.create(0, 0);
         this.game.physics.enable(car, Phaser.Physics.ARCADE);
         let v_fac = 200
