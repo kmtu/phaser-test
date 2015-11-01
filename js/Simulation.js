@@ -4,12 +4,22 @@ export default class Simulation extends Phaser.State {
     constructor(game, widthMeter, heightMeter) {
         super(game);
         this.game = game;
+        this.world = game.world;
+        this.camera = game.camera;
+
         this.pixelPerMeter = 10;
-        this.worldWidth = this.pixelPerMeter * widthMeter;
-        this.worldHeight = this.pixelPerMeter * heightMeter;
+        this.initWorldWidth = this.pixelPerMeter * widthMeter;
+        this.initWorldHeight = this.pixelPerMeter * heightMeter;
+        this.zoomFactor = 1.1;
+        this.cameraMoveSpeed = 10;
+
         this.isNewStroke = true;
         this.lineBmd;
-        this.cursors;
+        this.mouseWorldPos = new Phaser.Point();
+    }
+
+    init() {
+        this.camera.roundPx = false;
     }
 
     preload() {
@@ -26,32 +36,35 @@ export default class Simulation extends Phaser.State {
         this.game.scale.pageAlignHorizontally = true;
         this.game.scale.pageAlignVertically = true;
 
-        this.game.world.setBounds(-this.worldWidth/2, -this.worldHeight/2, this.worldWidth, this.worldHeight);
-        this.game.camera.focusOnXY(0, 0);
+        this.world.setBounds(-this.initWorldWidth/2, -this.initWorldHeight/2, this.initWorldWidth, this.initWorldHeight);
+        this.camera.focusOnXY(0, 0);
 
-        this.game.add.tileSprite(this.game.world.x, this.game.world.y, this.game.world.width, this.game.world.height, 'background');
+        this.game.add.tileSprite(this.world.x, this.world.y, this.world.width, this.world.height, 'background');
 
         let carGroup = new CarGroup(this.game);
 
         let car = carGroup.create(0, 0, this.game.cache.getBitmapData('car'));
         this.game.physics.enable(car, Phaser.Physics.ARCADE);
-        let v_fac = 200
+        let v_fac = 300
         car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac)
         car.body.collideWorldBounds = true;
-        car.body.bounce.setTo(0.8, 0.8);
+        car.body.bounce.setTo(1, 1);
+        car.body.syncBounds = true;
 
-        this.lineBmd = this.game.add.bitmapData(this.game.world.width, this.game.world.height);
-        let line = this.game.add.sprite(this.game.world.x, this.game.world.y, this.lineBmd);
+        this.lineBmd = this.game.add.bitmapData(this.world.width, this.world.height);
+        let line = this.game.add.sprite(this.world.x, this.world.y, this.lineBmd);
         this.lineBmd.ctx.beginPath();
         this.lineBmd.ctx.strokeStyle = "red";
     }
 
     update() {
         if (this.game.input.mousePointer.isDown) {
+            this.mouseWorldPos.set((this.game.input.x + this.camera.x + this.world.width/2)/this.world.scale.x, (this.game.input.y + this.camera.y + this.world.height/2)/this.world.scale.y);
             if (this.isNewStroke) {
-                this.lineBmd.ctx.moveTo(this.game.input.x + this.game.camera.x + this.game.world.width/2, this.game.input.y + this.game.camera.y + this.game.world.height/2);
-            } else {
-                this.lineBmd.ctx.lineTo(this.game.input.x + this.game.camera.x + this.game.world.width/2, this.game.input.y + this.game.camera.y + this.game.world.height/2);
+                this.lineBmd.ctx.moveTo(this.mouseWorldPos.x, this.mouseWorldPos.y);
+            }
+            else {
+                this.lineBmd.ctx.lineTo(this.mouseWorldPos.x, this.mouseWorldPos.y);
             }
             this.lineBmd.ctx.lineWidth = 2;
             this.lineBmd.ctx.stroke();
@@ -64,29 +77,72 @@ export default class Simulation extends Phaser.State {
 
         // camera control
         if (this.game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-            this.game.camera.y -= 4;
+            this.camera.y -= this.cameraMoveSpeed;
         }
         else if (this.game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-            this.game.camera.y += 4;
+            this.camera.y += this.cameraMoveSpeed;
         }
 
         if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-            this.game.camera.x -= 4;
+            this.camera.x -= this.cameraMoveSpeed;
         }
         else if (this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-            this.game.camera.x += 4;
+            this.camera.x += this.cameraMoveSpeed;
         }
 
         if (this.game.input.keyboard.isDown(Phaser.Keyboard.Z)) {
-            this.game.camera.y -= 4;
+            this.zoomIn();
         }
         else if (this.game.input.keyboard.isDown(Phaser.Keyboard.X)) {
-            this.game.camera.y += 4;
+            this.zoomOut();
+        }
+
+        if (this.game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+            this.resetCamera();
         }
     }
 
     render() {
         this.game.debug.text('FPS: ' + this.game.time.fps || 'FPS: --', 40, 40, "#00ff00");
-        this.game.debug.cameraInfo(this.game.camera, 500, 32);
+        this.game.debug.cameraInfo(this.camera, 40, 64, "#00ff00");
+        this.game.debug.text(`World.bounds: ${this.world.bounds.x}, ${this.world.bounds.y}, ${this.world.bounds.width}, ${this.world.bounds.height}`, 40, 150, "#00ff00");
+        this.game.debug.text(`Physics.bounds: ${this.game.physics.arcade.bounds.x}, ${this.game.physics.arcade.bounds.y}, ${this.game.physics.arcade.bounds.width}, ${this.game.physics.arcade.bounds.height}`, 40, 170, "#00ff00");
+        this.game.debug.text(`scale: ${this.world.scale.x}`, 40, 200, "#00ff00");
+    }
+
+    zoomBy(factor) {
+        this.world.scale.multiply(factor, factor);
+        this.world.bounds.scale(factor, factor);
+        this.world.setBounds(-this.world.width/2, -this.world.height/2, this.world.width, this.world.height);
+
+        this.camera.focusOnXY(this.camera.view.centerX * factor, this.camera.view.centerY * factor);
+
+        this.pixelPerMeter *= factor;
+    }
+
+    zoomIn(factor=this.zoomFactor) {
+        this.zoomBy(factor);
+    }
+
+    zoomOut(factor=this.zoomFactor) {
+        let newWidth = this.world.bounds.width / factor;
+        let newHeight = this.world.bounds.height / factor;
+        let zoomFactor1 = factor;
+        let zoomFactor2 = factor;
+
+        if (newWidth < this.camera.view.width) {
+            zoomFactor1 = this.world.bounds.width / this.camera.view.width;
+        }
+        if (newHeight >= this.camera.view.height) {
+            zoomFactor2 = this.world.bounds.height / this.camera.view.height;
+        }
+
+        factor = Math.min(zoomFactor1, zoomFactor2);
+        this.zoomBy(1/factor);
+    }
+
+    resetCamera() {
+        this.camera.focusOnXY(0, 0);
+        this.zoomOut(this.world.scale.x);
     }
 }
