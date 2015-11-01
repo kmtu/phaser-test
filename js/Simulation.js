@@ -43,9 +43,9 @@ export default class Simulation extends Phaser.State {
 
         let carGroup = new CarGroup(this.game);
 
-        let car = carGroup.create(0, 0, this.game.cache.getBitmapData('car'));
+        let car = carGroup.create(0, 0);
         this.game.physics.enable(car, Phaser.Physics.ARCADE);
-        let v_fac = 300
+        let v_fac = 200
         car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac)
         car.body.collideWorldBounds = true;
         car.body.bounce.setTo(1, 1);
