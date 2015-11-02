@@ -35,18 +35,6 @@ export default class Simulation extends Phaser.State {
     create() {
         this.world.setBounds(-this.pixelWorldWidth/2, -this.pixelWorldHeight/2, this.pixelWorldWidth, this.pixelWorldHeight);
         this.camera.focusOnXY(0, 0);
-
-        this.game.add.tileSprite(this.world.x, this.world.y, this.world.width, this.world.height, 'background');
-
-        let carGroup = new CarGroup(this.game);
-        let car = carGroup.create(0, 0);
-        this.game.physics.enable(car, Phaser.Physics.ARCADE);
-        let v_fac = 200
-        car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac)
-        car.body.collideWorldBounds = true;
-        car.body.bounce.setTo(1, 1);
-        car.body.syncBounds = true;
-
         this.cameraTween = this.game.add.tween(this.camera);
         let onTap = function(pointer,  doubleTap) {
             if (doubleTap) {
@@ -58,22 +46,39 @@ export default class Simulation extends Phaser.State {
             }
         }
         this.game.input.onTap.add(onTap, this);
+        this.cursors = this.game.input.keyboard.createCursorKeys();
+        this.wasd = {
+            up: this.game.input.keyboard.addKey(Phaser.Keyboard.W),
+            down: this.game.input.keyboard.addKey(Phaser.Keyboard.S),
+            left: this.game.input.keyboard.addKey(Phaser.Keyboard.A),
+            right: this.game.input.keyboard.addKey(Phaser.Keyboard.D),
+        };
+
+        this.game.add.tileSprite(this.world.x, this.world.y, this.world.width, this.world.height, 'background');
+
+        let carGroup = new CarGroup(this.game);
+        let car = carGroup.create(0, 0);
+        this.game.physics.enable(car, Phaser.Physics.ARCADE);
+        let v_fac = 200
+        car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac)
+        car.body.collideWorldBounds = true;
+        car.body.bounce.setTo(1, 1);
+        car.body.syncBounds = true;
     }
 
     update() {
-
         // camera control
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+        if (this.cursors.up.isDown || this.wasd.up.isDown) {
             this.camera.y -= this.cameraMoveSpeed;
         }
-        else if (this.game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+        else if (this.cursors.down.isDown || this.wasd.down.isDown) {
             this.camera.y += this.cameraMoveSpeed;
         }
 
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+        if (this.cursors.left.isDown || this.wasd.left.isDown) {
             this.camera.x -= this.cameraMoveSpeed;
         }
-        else if (this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+        else if (this.cursors.right.isDown || this.wasd.right.isDown) {
             this.camera.x += this.cameraMoveSpeed;
         }
 
