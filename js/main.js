@@ -19,8 +19,8 @@ window.addEventListener('resize', function () {
     adjust();
 });
 
+let simState = new Simulation(worldWidthMeter, worldHeightMeter, pixelPerMeter);
 let game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game');
-let simState = new Simulation(game, worldWidthMeter, worldHeightMeter, pixelPerMeter);
 
 game.state.add('Simulation', simState);
 game.state.start('Simulation');

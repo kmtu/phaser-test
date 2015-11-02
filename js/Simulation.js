@@ -1,12 +1,8 @@
 import CarGroup from 'js/CarGroup';
 
 export default class Simulation extends Phaser.State {
-    constructor(game, widthMeter, heightMeter, pixelPerMeter) {
-        super(game);
-        this.game = game;
-        this.world = game.world;
-        this.camera = game.camera;
-
+    constructor(widthMeter, heightMeter, pixelPerMeter) {
+        super();
         this.pixelPerMeter = pixelPerMeter;
         this.realWorldWidth = widthMeter;
         this.realWorldHeight = heightMeter;
@@ -27,53 +23,53 @@ export default class Simulation extends Phaser.State {
     }
 
     init() {
-        this.game.time.advancedTiming = true;
-        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        this.game.scale.pageAlignHorizontally = true;
-        this.game.scale.pageAlignVertically = true;
+        this.time.advancedTiming = true;
+        this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        this.scale.pageAlignHorizontally = true;
+        this.scale.pageAlignVertically = true;
         this.camera.roundPx = false;
     }
 
     preload() {
-        this.game.stage.backgroundColor = '#2d2d2d';
-        let carBmd = this.game.add.bitmapData(50, 35, 'car', true);
+        this.stage.backgroundColor = '#2d2d2d';
+        let carBmd = this.add.bitmapData(50, 35, 'car', true);
         carBmd.ctx.fillStyle = "#995500";
         carBmd.ctx.fillRect(0, 0, 50, 35);
-        this.game.load.image('background', 'assets/background.png');
+        this.load.image('background', 'assets/background.png');
     }
 
     create() {
         this.world.setBounds(-this.pixelWorldWidth/2, -this.pixelWorldHeight/2, this.pixelWorldWidth, this.pixelWorldHeight);
         this.camera.focusOnXY(0, 0);
-        this.cameraTween = this.game.add.tween(this.camera);
+        this.cameraTween = this.add.tween(this.camera);
         let onTap = function(pointer,  doubleTap) {
             if (doubleTap) {
                 this.cameraTween.stop();
-                this.cameraTween = this.game.add.tween(this.camera);
+                this.cameraTween = this.add.tween(this.camera);
                 this.cameraTween.to({x: pointer.worldX - this.camera.width / 2,
                                      y: pointer.worldY - this.camera.height / 2},
                                     200, Phaser.Easing.Cubic.InOut, true);
             }
         };
-        this.game.input.onTap.add(onTap, this);
-        this.cursors = this.game.input.keyboard.createCursorKeys();
+        this.input.onTap.add(onTap, this);
+        this.cursors = this.input.keyboard.createCursorKeys();
         this.wasd = {
-            up: this.game.input.keyboard.addKey(Phaser.Keyboard.W),
-            down: this.game.input.keyboard.addKey(Phaser.Keyboard.S),
-            left: this.game.input.keyboard.addKey(Phaser.Keyboard.A),
-            right: this.game.input.keyboard.addKey(Phaser.Keyboard.D),
+            up: this.input.keyboard.addKey(Phaser.Keyboard.W),
+            down: this.input.keyboard.addKey(Phaser.Keyboard.S),
+            left: this.input.keyboard.addKey(Phaser.Keyboard.A),
+            right: this.input.keyboard.addKey(Phaser.Keyboard.D),
         };
 
-        this.game.input.mouse.mouseWheelCallback = (e) => {
+        this.input.mouse.mouseWheelCallback = (e) => {
             let factor = Math.exp(-e.deltaY * 0.0005);
             this.zoomBy(factor);
         };
 
         // world creation
-        this.game.add.tileSprite(this.world.x, this.world.y, this.world.width, this.world.height, 'background');
+        this.add.tileSprite(this.world.x, this.world.y, this.world.width, this.world.height, 'background');
         let carGroup = new CarGroup(this.game);
         let car = carGroup.create(0, 0);
-        this.game.physics.enable(car, Phaser.Physics.ARCADE);
+        this.physics.enable(car, Phaser.Physics.ARCADE);
         let v_fac = 200
         car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac)
         car.body.collideWorldBounds = true;
@@ -97,23 +93,23 @@ export default class Simulation extends Phaser.State {
             this.camera.x += this.cameraMoveSpeed;
         }
 
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.Z)) {
+        if (this.input.keyboard.isDown(Phaser.Keyboard.Z)) {
             this.zoomIn();
         }
-        else if (this.game.input.keyboard.isDown(Phaser.Keyboard.X)) {
+        else if (this.input.keyboard.isDown(Phaser.Keyboard.X)) {
             this.zoomOut();
         }
 
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+        if (this.input.keyboard.isDown(Phaser.Keyboard.R)) {
             this.resetCamera();
         }
     }
 
     render() {
-        this.game.debug.text('FPS: ' + this.game.time.fps || 'FPS: --', 40, 40, "#00ff00");
+        this.game.debug.text('FPS: ' + this.time.fps || 'FPS: --', 40, 40, "#00ff00");
         this.game.debug.cameraInfo(this.camera, 40, 64, "#00ff00");
         this.game.debug.text(`World.bounds: ${this.world.bounds.x}, ${this.world.bounds.y}, ${this.world.bounds.width}, ${this.world.bounds.height}`, 40, 150, "#00ff00");
-        this.game.debug.text(`Physics.bounds: ${this.game.physics.arcade.bounds.x}, ${this.game.physics.arcade.bounds.y}, ${this.game.physics.arcade.bounds.width}, ${this.game.physics.arcade.bounds.height}`, 40, 170, "#00ff00");
+        this.game.debug.text(`Physics.bounds: ${this.physics.arcade.bounds.x}, ${this.physics.arcade.bounds.y}, ${this.physics.arcade.bounds.width}, ${this.physics.arcade.bounds.height}`, 40, 170, "#00ff00");
         this.game.debug.text(`scale: ${this.world.scale.x}`, 40, 200, "#00ff00");
     }
 
