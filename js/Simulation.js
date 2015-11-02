@@ -14,6 +14,16 @@ export default class Simulation extends Phaser.State {
         this.pixelWorldHeight = pixelPerMeter * heightMeter;
         this.zoomFactor = 1.1;
         this.cameraMoveSpeed = 10;
+        this._zoomLevel = 0;
+    }
+
+    get zoomLevel() {
+        return this._zoomLevel;
+    }
+
+    set zoomLevel(level) {
+        let factor = Math.exp(level - this._zoomLevel);
+        factor = this.zoomBy(factor);
     }
 
     init() {
@@ -44,7 +54,7 @@ export default class Simulation extends Phaser.State {
                                      y: pointer.worldY - this.camera.height / 2},
                                     200, Phaser.Easing.Cubic.InOut, true);
             }
-        }
+        };
         this.game.input.onTap.add(onTap, this);
         this.cursors = this.game.input.keyboard.createCursorKeys();
         this.wasd = {
@@ -54,8 +64,13 @@ export default class Simulation extends Phaser.State {
             right: this.game.input.keyboard.addKey(Phaser.Keyboard.D),
         };
 
-        this.game.add.tileSprite(this.world.x, this.world.y, this.world.width, this.world.height, 'background');
+        this.game.input.mouse.mouseWheelCallback = (e) => {
+            let factor = Math.exp(-e.deltaY * 0.0005);
+            this.zoomBy(factor);
+        };
 
+        // world creation
+        this.game.add.tileSprite(this.world.x, this.world.y, this.world.width, this.world.height, 'background');
         let carGroup = new CarGroup(this.game);
         let car = carGroup.create(0, 0);
         this.game.physics.enable(car, Phaser.Physics.ARCADE);
@@ -103,13 +118,27 @@ export default class Simulation extends Phaser.State {
     }
 
     zoomBy(factor) {
+        if (factor < 1) {
+            let newWidth = this.world.bounds.width * factor;
+            let newHeight = this.world.bounds.height * factor;
+            let zoomFactor1 = factor;
+            let zoomFactor2 = factor;
+
+            if (newWidth < this.camera.view.width) {
+                zoomFactor1 = this.camera.view.width / this.world.bounds.width;
+            }
+            if (newHeight >= this.camera.view.height) {
+                zoomFactor2 = this.camera.view.height / this.world.bounds.height;
+            }
+
+            factor = Math.max(zoomFactor1, zoomFactor2);
+        }
         this.world.scale.multiply(factor, factor);
         this.world.bounds.scale(factor, factor);
         this.world.setBounds(-this.world.width/2, -this.world.height/2, this.world.width, this.world.height);
-
         this.camera.focusOnXY(this.camera.view.centerX * factor, this.camera.view.centerY * factor);
-
-        this.pixelPerMeter *= factor;
+        this._zoomLevel += Math.log(factor);
+        return factor;
     }
 
     zoomIn(factor=this.zoomFactor) {
@@ -117,24 +146,11 @@ export default class Simulation extends Phaser.State {
     }
 
     zoomOut(factor=this.zoomFactor) {
-        let newWidth = this.world.bounds.width / factor;
-        let newHeight = this.world.bounds.height / factor;
-        let zoomFactor1 = factor;
-        let zoomFactor2 = factor;
-
-        if (newWidth < this.camera.view.width) {
-            zoomFactor1 = this.world.bounds.width / this.camera.view.width;
-        }
-        if (newHeight >= this.camera.view.height) {
-            zoomFactor2 = this.world.bounds.height / this.camera.view.height;
-        }
-
-        factor = Math.min(zoomFactor1, zoomFactor2);
         this.zoomBy(1/factor);
     }
 
     resetCamera() {
         this.camera.focusOnXY(0, 0);
-        this.zoomOut(this.world.scale.x);
+        this.zoomLevel = 0;
     }
 }
