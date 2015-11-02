@@ -29,6 +29,7 @@ export default class Simulation extends Phaser.State {
         this.scale.pageAlignHorizontally = true;
         this.scale.pageAlignVertically = true;
         this.camera.roundPx = false;
+        document.body.oncontextmenu = function() { return false; };
     }
 
     preload() {
