@@ -11,6 +11,7 @@ export default class Simulation extends Phaser.State {
         this.zoomFactor = 1.1;
         this.cameraMoveSpeed = 10;
         this._zoomLevel = 0;
+        this.zoomWheelFactor = 0.002;
     }
 
     get zoomLevel() {
@@ -48,7 +49,7 @@ export default class Simulation extends Phaser.State {
                 this.cameraTween = this.add.tween(this.camera);
                 this.cameraTween.to({x: pointer.worldX - this.camera.width / 2,
                                      y: pointer.worldY - this.camera.height / 2},
-                                    200, Phaser.Easing.Cubic.InOut, true);
+                                    500, Phaser.Easing.Exponential.Out, true);
             }
         };
         this.input.onTap.add(onTap, this);
@@ -61,8 +62,10 @@ export default class Simulation extends Phaser.State {
         };
 
         this.input.mouse.mouseWheelCallback = (e) => {
-            let factor = Math.exp(-e.deltaY * 0.0005);
-            this.zoomBy(factor);
+            let level = this.zoomLevel - e.deltaY * this.zoomWheelFactor;
+            this.cameraTween.stop();
+            this.cameraTween = this.add.tween(this);
+            this.cameraTween.to({zoomLevel: level}, 500, Phaser.Easing.Exponential.Out, true);
         };
 
         // world creation
