@@ -14,10 +14,6 @@ export default class Simulation extends Phaser.State {
         this.pixelWorldHeight = pixelPerMeter * heightMeter;
         this.zoomFactor = 1.1;
         this.cameraMoveSpeed = 10;
-
-        this.isNewStroke = true;
-        this.lineBmd;
-        this.mouseWorldPos = new Phaser.Point();
     }
 
     init() {
@@ -51,35 +47,20 @@ export default class Simulation extends Phaser.State {
         car.body.bounce.setTo(1, 1);
         car.body.syncBounds = true;
 
-        this.lineBmd = this.game.add.bitmapData(this.world.width, this.world.height);
-        let line = this.game.add.sprite(this.world.x, this.world.y, this.lineBmd);
-        this.lineBmd.ctx.translate(this.world.width/2, this.world.height/2);
-        this.lineBmd.circle(0, 0, 20, 'blue');
-        this.lineBmd.ctx.beginPath();
-        this.lineBmd.ctx.arc(0, 0, 10, 0, 2*Math.PI, false);
-        this.lineBmd.ctx.fillStyle = "green";
-        this.lineBmd.ctx.fill();
-        this.lineBmd.ctx.beginPath();
-        this.lineBmd.ctx.strokeStyle = "red";
+        this.cameraTween = this.game.add.tween(this.camera);
+        let onTap = function(pointer,  doubleTap) {
+            if (doubleTap) {
+                this.cameraTween.stop();
+                this.cameraTween = this.game.add.tween(this.camera);
+                this.cameraTween.to({x: pointer.worldX - this.camera.width / 2,
+                                     y: pointer.worldY - this.camera.height / 2},
+                                    200, Phaser.Easing.Cubic.InOut, true);
+            }
+        }
+        this.game.input.onTap.add(onTap, this);
     }
 
     update() {
-        if (this.game.input.mousePointer.isDown) {
-            this.mouseWorldPos.set(this.game.input.worldX / this.world.scale.x, this.game.input.worldY / this.world.scale.y);
-            if (this.isNewStroke) {
-                this.lineBmd.ctx.moveTo(this.mouseWorldPos.x, this.mouseWorldPos.y);
-            }
-            else {
-                this.lineBmd.ctx.lineTo(this.mouseWorldPos.x, this.mouseWorldPos.y);
-            }
-            this.lineBmd.ctx.lineWidth = 2;
-            this.lineBmd.ctx.stroke();
-            this.lineBmd.dirty = true;
-            this.isNewStroke = false;
-        }
-        if (this.game.input.mousePointer.isUp) {
-            this.isNewStroke = true;
-        }
 
         // camera control
         if (this.game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
