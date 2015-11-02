@@ -53,13 +53,19 @@ export default class Simulation extends Phaser.State {
 
         this.lineBmd = this.game.add.bitmapData(this.world.width, this.world.height);
         let line = this.game.add.sprite(this.world.x, this.world.y, this.lineBmd);
+        this.lineBmd.ctx.translate(this.world.width/2, this.world.height/2);
+        this.lineBmd.circle(0, 0, 20, 'blue');
+        this.lineBmd.ctx.beginPath();
+        this.lineBmd.ctx.arc(0, 0, 10, 0, 2*Math.PI, false);
+        this.lineBmd.ctx.fillStyle = "green";
+        this.lineBmd.ctx.fill();
         this.lineBmd.ctx.beginPath();
         this.lineBmd.ctx.strokeStyle = "red";
     }
 
     update() {
         if (this.game.input.mousePointer.isDown) {
-            this.mouseWorldPos.set((this.game.input.x + this.camera.x + this.world.width/2)/this.world.scale.x, (this.game.input.y + this.camera.y + this.world.height/2)/this.world.scale.y);
+            this.mouseWorldPos.set(this.game.input.worldX / this.world.scale.x, this.game.input.worldY / this.world.scale.y);
             if (this.isNewStroke) {
                 this.lineBmd.ctx.moveTo(this.mouseWorldPos.x, this.mouseWorldPos.y);
             }
