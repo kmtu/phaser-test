@@ -79,6 +79,11 @@ export default class Simulation extends Phaser.State {
         let path = new Path();
         path.add(-10 * this.pixelPerMeter, 0);
         path.add(10 * this.pixelPerMeter, 0);
+        path.add(20 * this.pixelPerMeter, 30 * this.pixelPerMeter);
+        path.add(-20 * this.pixelPerMeter, -20 * this.pixelPerMeter);
+        car.setPath(path);
+        car.speed = 10 * this.pixelPerMeter;
+        this.car = car;
         //this.physics.enable(car, Phaser.Physics.ARCADE);
         //let v_fac = 200;
         //car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac);

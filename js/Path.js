@@ -4,11 +4,18 @@ import LineSegment from "js/LineSegment";
 
 export default class Path {
     constructor() {
-        this.reset();
+        this.segments = [];
+        this.accumDistance = [];
+        this._init = null;
     }
 
     get distance() {
-        return this.accumDistance[this.accumDistance.length - 1];
+        if (this.accumDistance.length > 0) {
+            return this.accumDistance[this.accumDistance.length - 1];
+        }
+        else {
+            return 0;
+        }
     }
 
     get start() {
@@ -27,12 +34,6 @@ export default class Path {
         else {
             return null
         }
-    }
-
-    reset() {
-        this.segments = [];
-        this.accumDistance = [];
-        this._init = null;
     }
 
     add(obj) {
@@ -57,82 +58,77 @@ export default class Path {
         if (this.end) {
             this._addSegment(new LineSegment(this.end, point));
         }
-        else if (this.start) {
-            throw "Unable to add point to an empty path";
+        else if (this._init instanceof Point) {
+            this._addSegment(new LineSegment(this._init, point));
+            this._init = null;
+        }
+        else {
+            this._init = point;
         }
     }
 
     _addSegment(segment) {
         if (this.segments.length > 0) {
+            this.accumDistance.push(segment.distance + this.accumDistance[this.accumDistance.length - 1]);
         }
         else {
-            this.start = segment.start;
+            this.accumDistance.push(segment.distance);
         }
-        this.end = segment.end;
+        this.segments.push(segment);
+    }
 
-        //if (this.points.length > 0) {
-            //let segment = new LineSegment();
-            //segment.start = this.points[this.points.length - 1];
-            //segment.end = point;
-            //this.segments.push(segment);
-            //this.accumDistance.push(this.accumDistance[this.accumDistance.length - 1] +
-                                    //this.segments[this.segments.length - 1].length);
+    removeLastSegment() {
+        this.segments.pop();
+        this.accumDistance.pop();
+    }
+
+    //removePointAt(index) {
+        //if (index === this.points.length - 1) {
+            //this.segments.pop();
+            //this.accumDistance.pop();
+            //return this.points.pop();
+        //}
+        //else if (index === 0) {
+            //this.segments.shift();
+            //this.accumDistance.shift();
+            //let offset = this.accumDistance[0];
+            //this.accumDistance.forEach((e, i, a) => {a[i] = e - offset});
+            //return this.points.shift();
         //}
         //else {
-            //this.accumDistance.push(0);
+            //let oldLength = this.segments[index - 1].length + this.segments[index].length;
+            //this.segments[index].start = this.segments[index - 1].start;
+            //this.segments.splice(index - 1, 1);
+            //let newLength = this.segments[index - 1].length;
+            //this.accumDistance.splice(index, 1);
+            //let offset = newLength - oldLength;
+            //for (let i = index; i < this.accumDistance.length; i++) {
+                //this.accumDistance[i] += offset;
+            //}
+            //return this.points.splice(index, 1);
         //}
-        //this.points.push(point);
-    }
-
-    removePoint(point=undefined) {
-        let index;
-
-        if (point === undefined) {
-            index = this.points.length - 1;
-        }
-        else {
-            index = this.points.indexOf(point);
-        }
-
-        this.removePointAt(index);
-    }
-
-    removePointAt(index) {
-        if (index === this.points.length - 1) {
-            this.segments.pop();
-            this.accumDistance.pop();
-            return this.points.pop();
-        }
-        else if (index === 0) {
-            this.segments.shift();
-            this.accumDistance.shift();
-            let offset = this.accumDistance[0];
-            this.accumDistance.forEach((e, i, a) => {a[i] = e - offset});
-            return this.points.shift();
-        }
-        else {
-            let oldLength = this.segments[index - 1].length + this.segments[index].length;
-            this.segments[index].start = this.segments[index - 1].start;
-            this.segments.splice(index - 1, 1);
-            let newLength = this.segments[index - 1].length;
-            this.accumDistance.splice(index, 1);
-            let offset = newLength - oldLength;
-            for (let i = index; i < this.accumDistance.length; i++) {
-                this.accumDistance[i] += offset;
-            }
-            return this.points.splice(index, 1);
-        }
-    }
+    //}
 
     distanceToPosition(distance) {
-        let index = this.distanceToSegmentIndex(distance);
-        let offset = distance - this.accumDistance[index + 1];
-        this.segments[index].distanceToPosition(offset);
+        if (distance < 0) {
+            return this.start;
+        }
+        else if (distance > this.distance) {
+            return this.end;
+        }
+        else {
+            let index = this._distanceToSegmentIndex(distance);
+            let offset = 0;
+            if (index > 0) {
+                offset = this.accumDistance[index - 1];
+            }
+            return this.segments[index].distanceToPosition(distance - offset);
+        }
     }
 
-    distanceToSegmentIndex(distance) {
+    _distanceToSegmentIndex(distance) {
         return this.segments.findIndex((e, i, a) => {
-            return this.accumDistance[i + 1] > distance;
+            return this.accumDistance[i] > distance;
         });
     }
 }

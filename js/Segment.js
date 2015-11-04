@@ -1,8 +1,20 @@
 export default class Segment {
-    constructor(start, end) {
-        this.start = start;
-        this.end = end;
-        this.distance = 0;
-        this.distanceToPosition = null;
+    constructor() {
+    }
+
+    get start() {
+        return null;
+    }
+
+    get end() {
+        return null;
+    }
+
+    get distance() {
+        return null;
+    }
+
+    distanceToPosition() {
+        throw "distanceToPosition() must be overridden";
     }
 }
