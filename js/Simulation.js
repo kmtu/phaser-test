@@ -1,6 +1,8 @@
 import CarPool from 'js/CarPool';
+import Car from 'js/Car';
 import Path from 'js/Path';
 import LineSegment from "js/LineSegment";
+import Direction from "js/Direction"
 
 export default class Simulation extends Phaser.State {
     constructor(widthMeter, heightMeter, pixelPerMeter) {
@@ -36,9 +38,9 @@ export default class Simulation extends Phaser.State {
 
     preload() {
         this.stage.backgroundColor = '#2d2d2d';
-        let carBmd = this.add.bitmapData(50, 35, 'car', true);
-        carBmd.ctx.fillStyle = "#995500";
-        carBmd.ctx.fillRect(0, 0, 50, 35);
+        let carBmd = this.add.bitmapData(Car.spec.default.size.length * this.pixelPerMeter, Car.spec.default.size.width * this.pixelPerMeter, Car.spec.default.texture, true);
+        carBmd.ctx.fillStyle = Car.spec.default.color;
+        carBmd.ctx.fillRect(0, 0, carBmd.width, carBmd.height);
         this.load.image('background', 'assets/background.png');
     }
 

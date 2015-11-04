@@ -7,6 +7,6 @@ export default class CarPool extends Phaser.Group {
     }
 
     create(x, y) {
-        return super.create(x, y, this.game.cache.getBitmapData('car'));
+        return super.create(x, y, this.game.cache.getBitmapData(Car.spec.default.texture));
     }
 }
