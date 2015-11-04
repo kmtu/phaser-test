@@ -1,6 +1,6 @@
 import Car from "js/Car";
 
-export default class CarGroup extends Phaser.Group {
+export default class CarPool extends Phaser.Group {
     constructor(game) {
         super(game);
         this.classType = Car;

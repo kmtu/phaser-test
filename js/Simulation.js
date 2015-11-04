@@ -1,4 +1,6 @@
-import CarGroup from 'js/CarGroup';
+import CarPool from 'js/CarPool';
+import Path from 'js/Path';
+import LineSegment from "js/LineSegment";
 
 export default class Simulation extends Phaser.State {
     constructor(widthMeter, heightMeter, pixelPerMeter) {
@@ -71,14 +73,18 @@ export default class Simulation extends Phaser.State {
 
         // world creation
         this.add.tileSprite(this.world.x, this.world.y, this.world.width, this.world.height, 'background');
-        let carGroup = new CarGroup(this.game);
-        let car = carGroup.create(0, 0);
-        this.physics.enable(car, Phaser.Physics.ARCADE);
-        let v_fac = 200
-        car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac)
-        car.body.collideWorldBounds = true;
-        car.body.bounce.setTo(1, 1);
-        car.body.syncBounds = true;
+        let carPool = new CarPool(this.game);
+        let car = carPool.create(0, 0);
+
+        let path = new Path();
+        path.add(-10 * this.pixelPerMeter, 0);
+        path.add(10 * this.pixelPerMeter, 0);
+        //this.physics.enable(car, Phaser.Physics.ARCADE);
+        //let v_fac = 200;
+        //car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac);
+        //car.body.collideWorldBounds = true;
+        //car.body.bounce.setTo(1, 1);
+        //car.body.syncBounds = true;
     }
 
     update() {
