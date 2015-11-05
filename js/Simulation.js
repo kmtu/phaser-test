@@ -76,22 +76,43 @@ export default class Simulation extends Phaser.State {
         // world creation
         this.add.tileSprite(this.world.x, this.world.y, this.world.width, this.world.height, 'background');
         let carPool = new CarPool(this.game);
-        let car = carPool.create(0, 0);
 
         let path = new Path();
         path.add(-10 * this.pixelPerMeter, 0);
         path.add(10 * this.pixelPerMeter, 0);
         path.add(20 * this.pixelPerMeter, 30 * this.pixelPerMeter);
         path.add(-20 * this.pixelPerMeter, -20 * this.pixelPerMeter);
+
+        // render path for debug
+        let pathBmd = this.game.add.bitmapData(this.world.width, this.world.height);
+        let ctx = pathBmd.ctx;
+        let lineColor = "green";
+        let lineWidth = 5;
+        ctx.translate(-this.world.x, -this.world.y);
+        ctx.beginPath();
+        ctx.moveTo(path.start.x, path.start.y);
+        for (let seg of path.segments) {
+            ctx.lineTo(seg.end.x, seg.end.y);
+        }
+        ctx.strokeStyle = "green";
+        ctx.lineWidth = 5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+        ctx.closePath();
+        let pathSprite = this.game.add.sprite(this.world.x, this.world.y, pathBmd);
+
+        let dotColor = "red";
+        let dotRadius = 8;
+        pathBmd.circle(path.start.x, path.start.y, dotRadius, dotColor);
+        for (let seg of path.segments) {
+            pathBmd.circle(seg.end.x, seg.end.y, dotRadius, dotColor);
+        }
+
+        let car = carPool.create(0, 0);
         car.setPath(path);
         car.speed = 10 * this.pixelPerMeter;
         this.car = car;
-        //this.physics.enable(car, Phaser.Physics.ARCADE);
-        //let v_fac = 200;
-        //car.body.velocity.setTo(Math.random()*v_fac, Math.random()*v_fac);
-        //car.body.collideWorldBounds = true;
-        //car.body.bounce.setTo(1, 1);
-        //car.body.syncBounds = true;
     }
 
     update() {
