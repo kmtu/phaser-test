@@ -32,9 +32,17 @@ export default class LineSegment extends Segment {
         return this._distance;
     }
 
+    get angle() {
+        return this._line.angle;
+    }
+
     distanceToPosition(distance) {
         let pos = this.normalizedTangent.multiply(distance, distance);
         return pos.add(this.start.x, this.start.y);
+    }
+
+    distanceToAngle(distance) {
+        return this.angle;
     }
 
     get normalizedTangent() {

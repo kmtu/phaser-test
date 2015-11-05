@@ -15,7 +15,9 @@ export default class Car extends Phaser.Sprite {
         if (this.speed != 0) {
             this._pathDistance += this.speed * this.game.time.physicsElapsed * this.direction;
             let pos = this.path.distanceToPosition(this._pathDistance);
+            let angle = this.path.distanceToAngle(this._pathDistance);
             this.position.set(pos.x, pos.y);
+            this.rotation = angle;
         }
     }
 

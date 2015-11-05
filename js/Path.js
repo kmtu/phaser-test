@@ -126,6 +126,24 @@ export default class Path {
         }
     }
 
+    distanceToAngle(distance) {
+        if (distance < 0) {
+            return this.segments[0].distanceToAngle(0);
+        }
+        else if (distance > this.distance) {
+            let seg = this.segments[this.segments.length - 1];
+            return seg.distanceToAngle(seg.distance);
+        }
+        else {
+            let index = this._distanceToSegmentIndex(distance);
+            let offset = 0;
+            if (index > 0) {
+                offset = this.accumDistance[index - 1];
+            }
+            return this.segments[index].distanceToAngle(distance - offset);
+        }
+    }
+
     _distanceToSegmentIndex(distance) {
         return this.segments.findIndex((e, i, a) => {
             return this.accumDistance[i] > distance;

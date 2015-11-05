@@ -17,4 +17,8 @@ export default class Segment {
     distanceToPosition() {
         throw "distanceToPosition() must be overridden";
     }
+
+    distanceToAngle() {
+        throw "distanceToAngle() must be overridden";
+    }
 }
