@@ -12,8 +12,8 @@ export default class Simulation extends Phaser.State {
         this.realWorldHeight = heightMeter;
         this.pixelWorldWidth = pixelPerMeter * widthMeter;
         this.pixelWorldHeight = pixelPerMeter * heightMeter;
+        this.cameraMoveSpeed = pixelPerMeter;
         this.zoomFactor = 1.1;
-        this.cameraMoveSpeed = 10;
         this._zoomLevel = 0;
         this.zoomWheelFactor = 0.002;
     }
@@ -146,8 +146,9 @@ export default class Simulation extends Phaser.State {
         this.game.debug.text('FPS: ' + this.time.fps || 'FPS: --', 40, 40, "#00ff00");
         this.game.debug.cameraInfo(this.camera, 40, 64, "#00ff00");
         this.game.debug.text(`World.bounds: ${this.world.bounds.x}, ${this.world.bounds.y}, ${this.world.bounds.width}, ${this.world.bounds.height}`, 40, 150, "#00ff00");
-        this.game.debug.text(`mouse: ${this.input.mousePointer.worldX}, ${this.input.mousePointer.worldY}`, 40, 175, "#00ff00");
-        this.game.debug.text(`scale: ${this.world.scale.x}`, 40, 200, "#00ff00");
+        this.game.debug.text(`scale: ${this.world.scale.x}`, 40, 175, "#00ff00");
+        this.game.debug.text(`mouse at pixelWorld: ${this.input.mousePointer.worldX}, ${this.input.mousePointer.worldY}`, 40, 200, "#00ff00");
+        this.game.debug.text(`mouse at physWorld: ${this.input.mousePointer.worldX / this.pixelPerMeter}, ${this.input.mousePointer.worldY / this.pixelPerMeter}`, 40, 225, "#00ff00");
     }
 
     zoomBy(factor) {

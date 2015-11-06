@@ -2,8 +2,8 @@
 
 import Simulation from 'js/Simulation';
 
-let gameWidth = 1200;
-let gameHeight = 800;
+let gameWidth = 800;
+let gameHeight = 600;
 let worldWidthMeter = 240;
 let worldHeightMeter = 160;
 let pixelPerMeter = 10;
