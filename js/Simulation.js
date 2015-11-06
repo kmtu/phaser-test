@@ -46,7 +46,7 @@ export default class Simulation extends Phaser.State {
 
     create() {
         this.world.setBounds(-this.pixelWorldWidth/2, -this.pixelWorldHeight/2, this.pixelWorldWidth, this.pixelWorldHeight);
-        this.camera.focusOnXY(0, 0);
+        this.resetCamera();
         this.cameraTween = this.add.tween(this.camera);
         let onTap = function(pointer,  doubleTap) {
             if (doubleTap) {
@@ -84,7 +84,7 @@ export default class Simulation extends Phaser.State {
         path.add(-20 * this.pixelPerMeter, -20 * this.pixelPerMeter);
 
         // render path for debug
-        let pathBmd = this.game.add.bitmapData(this.world.width, this.world.height);
+        let pathBmd = this.add.bitmapData(this.world.width, this.world.height);
         let ctx = pathBmd.ctx;
         let lineColor = "green";
         let lineWidth = 5;
@@ -112,7 +112,6 @@ export default class Simulation extends Phaser.State {
         let car = carPool.create(0, 0);
         car.setPath(path);
         car.speed = 10 * this.pixelPerMeter;
-        this.car = car;
     }
 
     update() {
@@ -147,26 +146,24 @@ export default class Simulation extends Phaser.State {
         this.game.debug.text('FPS: ' + this.time.fps || 'FPS: --', 40, 40, "#00ff00");
         this.game.debug.cameraInfo(this.camera, 40, 64, "#00ff00");
         this.game.debug.text(`World.bounds: ${this.world.bounds.x}, ${this.world.bounds.y}, ${this.world.bounds.width}, ${this.world.bounds.height}`, 40, 150, "#00ff00");
-        this.game.debug.text(`Physics.bounds: ${this.physics.arcade.bounds.x}, ${this.physics.arcade.bounds.y}, ${this.physics.arcade.bounds.width}, ${this.physics.arcade.bounds.height}`, 40, 170, "#00ff00");
+        this.game.debug.text(`mouse: ${this.input.mousePointer.worldX}, ${this.input.mousePointer.worldY}`, 40, 175, "#00ff00");
         this.game.debug.text(`scale: ${this.world.scale.x}`, 40, 200, "#00ff00");
     }
 
     zoomBy(factor) {
-        if (factor < 1) {
-            let newWidth = this.world.bounds.width * factor;
-            let newHeight = this.world.bounds.height * factor;
-            let zoomFactor1 = factor;
-            let zoomFactor2 = factor;
+        let newWidth = this.world.bounds.width * factor;
+        let newHeight = this.world.bounds.height * factor;
+        let zoomFactor1 = factor;
+        let zoomFactor2 = factor;
 
-            if (newWidth < this.camera.view.width) {
-                zoomFactor1 = this.camera.view.width / this.world.bounds.width;
-            }
-            if (newHeight >= this.camera.view.height) {
-                zoomFactor2 = this.camera.view.height / this.world.bounds.height;
-            }
-
-            factor = Math.max(zoomFactor1, zoomFactor2);
+        if (newWidth < this.camera.view.width) {
+            zoomFactor1 = this.camera.view.width / this.world.bounds.width;
         }
+        if (newHeight < this.camera.view.height) {
+            zoomFactor2 = this.camera.view.height / this.world.bounds.height;
+        }
+        factor = Math.max(zoomFactor1, zoomFactor2);
+
         this.world.scale.multiply(factor, factor);
         this.world.bounds.scale(factor, factor);
         this.world.setBounds(-this.world.width/2, -this.world.height/2, this.world.width, this.world.height);

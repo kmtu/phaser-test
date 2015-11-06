@@ -2,10 +2,10 @@
 
 import Simulation from 'js/Simulation';
 
-let gameWidth = 800;
-let gameHeight = 600;
-let worldWidthMeter = 90;
-let worldHeightMeter = 70;
+let gameWidth = 1200;
+let gameHeight = 800;
+let worldWidthMeter = 240;
+let worldHeightMeter = 160;
 let pixelPerMeter = 10;
 let divgame = document.getElementById("game");
 

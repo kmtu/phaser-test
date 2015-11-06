@@ -22,7 +22,6 @@ export default class Car extends Phaser.Sprite {
     }
 
     setPath(path, startDistance=0, direction=Direction.FORTH) {
-        console.log(direction);
         if (path !== null || path !== undefined) {
             this._pathDistance = startDistance;
             this.path = path;
